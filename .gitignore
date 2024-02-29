@@ -1,1 +1,3 @@
 *.txt
+picture_converter/images/*.png
+picture_converter/silhouette/*.png

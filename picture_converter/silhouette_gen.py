@@ -1,8 +1,9 @@
+import os
 from PIL import Image
 
 
-def image_to_black(image_path, background_color=(0, 0, 0)):
-    img = Image.open(image_path)
+def image_to_black(image_name, background_color=(0, 0, 0)):
+    img = Image.open(f"./images/{image_name}")
 
     img = img.convert("RGBA")
 
@@ -11,13 +12,12 @@ def image_to_black(image_path, background_color=(0, 0, 0)):
     for i, pixel in enumerate(img_data):
 
         if pixel[:3] != background_color:
-
             img_data[i] = (0, 0, 0, 255)
 
     img.putdata(img_data)
 
-    img.save("./silhouette/test.png")
+    img.save(f"./silhouette/{image_name}")
 
 
-file = "./images/test.png"
-image_to_black(file)
+for file in os.listdir("./images/"):
+    image_to_black(file)
