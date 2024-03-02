@@ -1,3 +1,5 @@
 *.txt
+*.png
 picture_converter/images/*.png
 picture_converter/silhouette/*.png
+node_modules

@@ -13,5 +13,5 @@ for img in images:
     image_name = img["alt"].split('Boss')[1].replace('ingame','').replace('portrait','').strip()
     image_request = requests.get(image_url)
 
-    with open(f"./images/{image_name}.png", "wb") as file:
+    with open(f"./original/{image_name}.png", "wb") as file:
         file.write(image_request.content)

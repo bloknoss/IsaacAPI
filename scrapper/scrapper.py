@@ -28,8 +28,10 @@ class Scrapper:
 
     def get_item(self, item_name):
         try:
+
             item = {
                 "name": item_name,
+                "type": "",
                 "image": "",
                 "quote": "",
                 "id": "0.0.0",
@@ -57,9 +59,11 @@ class Scrapper:
             item_tier = item_card.find_all("img", alt="Item quality full")
             item_tags = item_card.find("div", {"data-source": "tags"})
             item_unlock = item_card.find("div", {"data-source": "unlocked by"})
+            item_type = item_card.find("div", {"data-source": "recharge"})
 
             item["id"] = item_id.text.strip()
-            item["image"] = item_image["data-src"]
+            item["image"] = item_image["data-src"].split("/revision")[0]
+            item["type"] = "active" if item_type != None else "passive"
             item["quote"] = item_quote.text.replace('"', "").strip()
             item["pools"] = self.get_item_pool(pools=item_pools)
             item["tier"] = len(item_tier)
@@ -70,7 +74,7 @@ class Scrapper:
 
             return item
         except Exception as e:
-            print(f"An error has occured with item: {item_name}\nError: {str(e)}")
+            print(f"There was an error while scrapping the item {item_name}.\n{str(e)}")
 
     def get_item_pool(self, pools):
         pool_items = pools.find_all("li")
@@ -113,18 +117,24 @@ class Scrapper:
 def write():
     t = Scrapper()
 
-    items = {"passives": [], "actives": []}
+    items = {"items": []}
 
     actives = t.actives
     passives = t.passives
 
+    print("Scrapping active items.")
     for active in range(len(actives)):
-        items["actives"].append(t.get_item(actives[active]))
-        print(f"{active}. {actives[active]} was scrapped.")
+        item = t.get_item(actives[active])
+        if item != None:
+            items["items"].append(item)
+            print(f"{active}. {actives[active]} was scrapped.")
 
+    print("Scrapping passive items.")
     for passive in range(len(passives)):
-        items["passives"].append(t.get_item(passives[passive]))
-        print(f"{passive}. {passives[passive]} was scrapped.")
+        item = t.get_item(passives[passive])
+        if item != None:
+            items["items"].append(item)
+            print(f"{passive}. {passives[passive]} was scrapped.")
 
     with open("items.json", "w") as f:
         f.write(json.dumps(items, indent=4))
