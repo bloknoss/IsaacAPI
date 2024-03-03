@@ -39,6 +39,7 @@ class Scrapper:
                 "character": "",
                 "transformations": [],
                 "pools": [],
+                "pools_images": [],
             }
 
             if item_name == "<3":
@@ -65,7 +66,8 @@ class Scrapper:
             item["image"] = item_image["data-src"].split("/revision")[0]
             item["type"] = "active" if item_type != None else "passive"
             item["quote"] = item_quote.text.replace('"', "").strip()
-            item["pools"] = self.get_item_pool(pools=item_pools)
+            item["pools"] = self.get_item_pools(pools=item_pools)
+            item["pools_images"] = self.get_item_pool_images(pools=item_pools)
             item["tier"] = len(item_tier)
             item["tags"] = self.get_item_tags(item_tags)
             item["transformations"] = self.get_item_transformation(item["tags"])
@@ -76,13 +78,35 @@ class Scrapper:
         except Exception as e:
             print(f"There was an error while scrapping the item {item_name}.\n{str(e)}")
 
-    def get_item_pool(self, pools):
+    def get_item_pools(self, pools):
         pool_items = pools.find_all("li")
         return (
             [pool_item.find_all("a")[-1]["title"] for pool_item in pool_items]
             if pool_items != None
-            else []
+            else ["None"]
         )
+
+    def get_item_pool_images(self, pools):
+        pool_items = pools.find_all("li")
+        pools_images = []
+        if pool_items == None:
+            return ["None"]
+
+        for pool_item in pool_items:
+            pool_mode = (
+                pool_item.find_all("span")[0]
+                .find("img")["data-src"]
+                .split("/revision")[0]
+            )
+            pool_type = (
+                pool_item.find_all("span")[1]
+                .find("img")["data-src"]
+                .split("/revision")[0]
+            )
+
+            pools_images.append([pool_mode, pool_type])
+
+        return pools_images
 
     def get_starting_character(self, page):
         name_element = page.find(
@@ -92,7 +116,7 @@ class Scrapper:
 
     def get_item_tags(self, tags):
         if tags == None:
-            return []
+            return ["None"]
 
         return [tag["alt"] for tag in tags.find_all("img")]
 
@@ -104,7 +128,7 @@ class Scrapper:
 
     def get_item_transformation(self, tags):
         if tags == None:
-            return []
+            return ["None"]
         transformations = []
 
         for tag in tags:

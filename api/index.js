@@ -7,6 +7,14 @@ const passives = [...items.items].filter((item) => item.type === "passive");
 
 const app = express();
 const PORT = 8080;
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 app.use("/images", express.static(path.join(__dirname, "images")));
 
@@ -34,11 +42,11 @@ app.get("/api/boss/:name/hidden", (req, res) => {
   }
 });
 
-app.get("/api/item/query/:name", (req, res) => {
+app.get("/api/items/query/:name", (req, res) => {
   let name = req.params.name;
 
   items.items.forEach((item) => {
-    if (item !== null && item.name === name) {
+    if (item !== null && item.name.toLowerCase() === name.toLowerCase()) {
       res.json(item);
     }
   });
@@ -47,12 +55,27 @@ app.get("/api/item/query/:name", (req, res) => {
   res.status(200);
 });
 
-app.get("/api/item/passives/:id", (req, res) => {
-  console.log(__dirname);
+app.get("/api/items/passives", (req, res) => {
+  res.json(passives);
+});
+
+app.get("/api/items/actives", (req, res) => {
+  res.json(actives);
+});
+
+app.get("/api/items/", (req, res) => {
+  res.json(items.items);
+});
+
+app.get("/api/items/:id", (req, res) => {
+  res.json(items.items[req.params.id]);
+});
+
+app.get("/api/items/passives/:id", (req, res) => {
   res.json(passives[req.params.id]);
 });
 
-app.get("/item/actives/:id", (req, res) => {
+app.get("/api/items/actives/:id", (req, res) => {
   res.json(actives[req.params.id]);
 });
 
