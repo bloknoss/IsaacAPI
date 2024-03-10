@@ -49,7 +49,7 @@ function renameKeys(obj, newKeys) {
 
 app.get("/api/bosses/", (req, res) => {
   const originalBosses = path.join(__dirname, "images/original");
-  const silhouetteBosses = path.join(__dirname, "images/original");
+  const silhouetteBosses = path.join(__dirname, "images/silhouette");
 
   const bosses = readFilesSync(originalBosses);
   const silhouette = readFilesSync(silhouetteBosses);
