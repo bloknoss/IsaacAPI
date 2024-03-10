@@ -22,11 +22,9 @@ function readFilesSync(dir) {
   fs.readdirSync(dir).forEach((filename) => {
     const name = path.parse(filename).name;
     const ext = path.parse(filename).ext;
-    const filepath = path.resolve(dir, filename);
-    const stat = fs.statSync(filepath);
-    const isFile = stat.isFile();
+    const filepath = `${dir.split(__dirname)[1].replaceAll("\\","/")}/${filename}`;
 
-    if (isFile) files.push({ filepath, name, ext });
+    files.push({ filepath, name, ext });
   });
 
   files.sort((a, b) => {
