@@ -22,7 +22,7 @@ function readFilesSync(dir) {
   fs.readdirSync(dir).forEach((filename) => {
     const name = path.parse(filename).name;
     const ext = path.parse(filename).ext;
-    const filepath = `${dir.split(__dirname)[1].replaceAll("\\","/")}/${filename}`;
+    const filepath = `${dir.split(__dirname)[1].replaceAll("\\", "/")}/${filename}`;
 
     files.push({ filepath, name, ext });
   });
@@ -55,6 +55,14 @@ app.get("/api/bosses/", (req, res) => {
   const silhouette = readFilesSync(silhouetteBosses);
 
   res.json({ original: bosses, silhouette: silhouette });
+});
+
+app.get("/api/bosses/:name", (req, res) => {
+  const bossName = req.params.name;
+  const originalUrl = `/images/original/${bossName}.png`;
+  const silhouetteUrl = `/images/silhouette/${bossName}.png`;
+
+  res.json({ bossName: bossName, original: originalUrl, silhouette: silhouetteUrl });
 });
 
 app.get("/api/boss/:name/original", (req, res) => {
